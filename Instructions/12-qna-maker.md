@@ -80,11 +80,11 @@ You can create a knowledge base from scratch, but it's common to start by import
 
 Your knowledge base has been populated with question and answer pairs from the Microsoft Learn FAQ, supplemented with a set of conversational *chit-chat* question  and answer pairs. You can extend the knowledge base by adding additional question and answer pairs.
 
-1. In the **LearnFAQ** project in Language Studio, select the **Edit knowledge base** page to see the existing question and answer pairs (if some tips are displayed, read them and click **Got it** to dismiss them, or click **Skip all**)
+1. In your **LearnFAQ** project in Language Studio, select the **Edit knowledge base** page to see the existing question and answer pairs (if some tips are displayed, read them and click **Got it** to dismiss them, or click **Skip all**)
 2. In the knowledge base, select **&#65291; Add question pair**.
 3. In the **Question** box, type `What is Microsoft certification?` and press **Enter****.
-4. Select **&#65291; Add alternative phrasing** and type `How can I demonstrate my Microsoft technology skills?` and press **Enter**.
-5. In the **Answer** box, type `The Microsoft Certified Professional program enables you to validate and prove your skills with Microsoft technologies.` Then press **Enter** and click **Submit** to add the question (including alternative phrasing) and answer to the knowledge base.
+4. Select **&#65291; Add alternative phrase** and type `How can I demonstrate my Microsoft technology skills?` and press **Enter**.
+5. In the **Answer** box, type `The Microsoft Certified Professional program enables you to validate and prove your skills with Microsoft technologies.` Then press **Submit** to add the question (including alternative phrasing) and answer to the knowledge base.
 
     In some cases, it makes sense to enable the user to follow up on answer to create a *multi-turn* conversation that enables the user to iteratively refine the question to get to the answer they need.
 
@@ -116,7 +116,7 @@ The knowledge base provides a back-end service that client applications can use 
 3. When deployment is complete, click **Get prediction URL** to view the REST endpoint for your knowledge base, and copy it to the clipboard (but don't close the dialog box yet).
 4. In Visual Studio Code, in the **12-qna** folder, open **ask-question.cmd**. This script uses *Curl* to call the REST interface of a question answering endpoint.
 5. In the script, replace *YOUR_PREDICTION_ENDPOINT* with the prediction endpoint you copied (ensuring it is enclosed in the quotation marks).
-6. Return to the browser and in the **Get prediction URL** dialog box, note that the sample request includes a value for the **Ocp-Apim-Subscription-Key** parameter, which looks similar to *ab12c345de678fg9hijk01lmno2pqrs34*. This is the authorization key for your resource. Copy it to the clipboard, and then click **Got it** to close the dialog box.
+6. Return to the browser and in the **Get prediction URL** dialog box, note that the sample request includes a value for the **Ocp-Apim-Subscription-Key** parameter, which looks similar to *ab12c345de678fg9hijk01lmno2pqrs34*. This is the authorization key for your resource. Copy it to the clipboard, and then click **Close** to close the dialog box.
 7. Return to Visual Studio Code, and in the **ask-question.cmd** script, replace *YOUR_KEY* with the key you copied (ensuring it is enclosed in the quotation marks).
 8. Note that the Curl command in the script submits a **question** parameter with the value **What is a Learning Path?**.
 9. Verify that the entire script looks similar to the following code, then save the file.
@@ -161,4 +161,4 @@ Most commonly, the client applications used to retrieve answers from a knowledge
 
 ## More information
 
-To learn more about question answering in the Language service, see the [Langage service documentation](https://docs.microsoft.com/en-us/azure/cognitive-services/language-service/question-answering/overview).
+To learn more about question answering in the Language service, see the [Language service documentation](https://docs.microsoft.com/en-us/azure/cognitive-services/language-service/question-answering/overview).

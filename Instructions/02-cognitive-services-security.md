@@ -118,7 +118,7 @@ First, you need to create a key vault and add a *secret* for the cognitive servi
     - **Region**: *The same region as your cognitive service resource*
     - **Pricing tier**: Standard
 3. Wait for deployment to complete and then go to your key vault resource.
-4. In the left navigation pane, select **Secrets** (in the Settings section).
+4. In the left navigation pane, select **Secrets** (in the Objects section).
 5. Select **+ Generate/Import** and add a new secret with the following settings :
     - **Upload options**: Manual
     - **Name**: Cognitive-Services-Key *(it's important to match this exactly, because later you'll run code that retrieves the secret based on this name)*
@@ -153,7 +153,7 @@ Make a note of the **appId**, **password**, and **tenant** values - you will nee
 2. To get the **object ID** of your service principal, run the following Azure CLI command, replacing *&lt;appId&gt;* with the value of your service principal's app ID.
 
     ```
-    az ad sp show --id <appId> --query objectId --out tsv
+    az ad sp show --id <appId> --query id --out tsv
     ```
 
 3. To assign permission for your new service principal to access secrets in your Key Vault, run the following Azure CLI command, replacing *&lt;keyVaultName&gt;* with the name of your Azure Key Vault resource and *&lt;objectId&gt;* with the value of your service principal's object ID.
@@ -223,7 +223,7 @@ Now you're ready to use the service principal identity in an application, so it 
     python keyvault-client.py
     ```
 
-6. When prompted, enter some text and review the language that is detected by the service. For example, try entering "Hello", "Bonjour", and "Hola".
+6. When prompted, enter some text and review the language that is detected by the service. For example, try entering "Hello", "Bonjour", and "Gracias".
 7. When you have finished testing the application, enter "quit" to stop the program.
 
 ## More information

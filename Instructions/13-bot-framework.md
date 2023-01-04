@@ -10,25 +10,12 @@ lab:
 
 In this exercise, you'll use the Microsoft Bot Framework SDK to create and deploy a bot.
 
-## Before you start
-
-Let's start by preparing the environment for bot development.
-
-### Update the Bot Framework Emulator
-
-You're going to use the Bot Framework SDK to create your bot, and the Bot Framework Emulator to test it. The Bot Framework Emulator is updated regularly, so let's make sure you have the latest version installed.
-
-> **Note**: Updates may include changes to the user interface that affect the instructions in this exercise.
-
-1. Start the **Bot Framework Emulator**, and if you are prompted to install an update, do so for the currently logged in user. If you are not prompted automatically, use the **Check for update** option on the **Help** menu to check for updates.
-2. After installing any available update, close the Bot Framework Emulator until you need it again later.
-
-### Clone the repository for this course
+## Clone the repository for this course
 
 If you have not already cloned **AI-102-AIEngineer** code repository to the environment where you're working on this lab, follow these steps to do so. Otherwise, open the cloned folder in Visual Studio Code.
 
 1. Start Visual Studio Code.
-2. Open the palette (SHIFT+CTRL+P) and run a **Git: Clone** command to clone the `https://github.com/MicrosoftLearning/AI-102-AIEngineer` repository to a local folder (it doesn't matter which folder).
+2. Open the palette (SHIFT+CTRL+P) and run a **Git: Clone** command to clone the repository `https://github.com/MicrosoftLearning/AI-102-AIEngineer` repository to a local folder (it doesn't matter which folder).
 3. When the repository has been cloned, open the folder in Visual Studio Code.
 4. Wait while additional files are installed to support the C# code projects in the repo.
 
@@ -69,13 +56,21 @@ pip install cookiecutter==1.7.0
 dotnet new echobot -n TimeBot
 ```
 
+If you're using **C-Sharp**, use the following command to open up the project file: 
+
+```Code
+code TimeBot\TimeBot.csproj
+```
+
+On line 4, change the *TargetFramework* value to be `netcoreapp3.1`.
+
 **Python**
 
 ```Python
 cookiecutter https://github.com/microsoft/botbuilder-python/releases/download/Templates/echo.zip
 ```
 
-If you're using Python, when prompted by cookiecutter, enter the following details:
+If you're using **Python**, when prompted by cookiecutter, enter the following details:
 - **bot_name**: TimeBot
 - **bot_description**: A bot for our times
     
@@ -106,13 +101,15 @@ python app.py
     
 When the bot starts, note the endpoint at which it is running is shown. This should be similar to **http://localhost:3978**.
 
-2. Start the Bot Framework Emulator, and open your bot by specifying the endpoint with the **/api/messages** path appended, like this:
+2. Start the **Bot Framework Emulator**, and if you are prompted to install an update, select **Cancel**.
+
+3. Open your bot by specifying the endpoint with the **/api/messages** path appended, like this:
 
     `http://localhost:3978/api/messages`
 
-3. After the conversation is opened in a **Live chat** pane, wait for the message *Hello and welcome!*.
-4. Enter a message such as *Hello* and view the response from the bot, which should echo back the message you entered.
-5. Close the Bot Framework Emulator and return to Visual Studio Code, then in the terminal window, enter **CTRL+C** to stop the bot.
+4. After the conversation is opened in a **Live chat** pane, wait for the message *Hello and welcome!*.
+5. Enter a message such as *Hello* and view the response from the bot, which should echo back the message you entered.
+6. Close the Bot Framework Emulator and return to Visual Studio Code, then in the terminal window, enter **CTRL+C** to stop the bot.
 
 ## Modify the bot code
 
@@ -184,7 +181,7 @@ python app.py
 
 As before, when the bot starts, note the endpoint at which it is running is shown.
 
-5. Start the Bot Framework Emulator, and open your bot by specifying the endpoint with the **/api/messages** path appended, like this:
+5. Start the Bot Framework Emulator (canceling any updates if prompted) and open your bot by specifying the endpoint with the **/api/messages** path appended, like this:
 
     `http://localhost:3978/api/messages`
 
