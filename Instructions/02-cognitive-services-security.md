@@ -112,11 +112,17 @@ First, you need to create a key vault and add a *secret* for the cognitive servi
 
 1. Make a note of the **key1** value for your cognitive services resource (or copy it to the clipboard).
 2. In the Azure portal, on the **Home** page, select the **&#65291;Create a resource** button, search for *Key Vault*, and create a **Key Vault** resource with the following settings:
-    - **Subscription**: *Your Azure subscription*
-    - **Resource group**: *The same resource group as your cognitive service resource*
-    - **Key vault name**: *Enter a unique name*
-    - **Region**: *The same region as your cognitive service resource*
-    - **Pricing tier**: Standard
+
+    - **Basics** tab
+        - **Subscription**: *Your Azure subscription*
+        - **Resource group**: *The same resource group as your cognitive service resource*
+        - **Key vault name**: *Enter a unique name*
+        - **Region**: *The same region as your cognitive service resource*
+        - **Pricing tier**: Standard
+    
+    - **Access configuration** tab
+        -  **Permission model**: Vault access policy
+     
 3. Wait for deployment to complete and then go to your key vault resource.
 4. In the left navigation pane, select **Secrets** (in the Objects section).
 5. Select **+ Generate/Import** and add a new secret with the following settings :
@@ -150,10 +156,10 @@ The output of this command includes information about your new service principal
 
 Make a note of the **appId**, **password**, and **tenant** values - you will need them later (if you close this terminal, you won't be able to retrieve the password; so it's important to note the values now - you can paste the output into a new text file in Visual Studio Code to ensure you can find the values you need later!)
 
-2. To get the **object ID** of your service principal, run the following Azure CLI command, replacing *&lt;appId&gt;* with the value of your service principal's app ID.
+2. To get the **object ID** of your service principal, run the following Azure CLI command, replacing *&lt;appId&gt;* with the value of your service principal's app ID. If running the following command gives no response, you may be using a different version of Azure CLI; replace `objectId` with `id` if that is the case.
 
     ```
-    az ad sp show --id <appId> --query id --out tsv
+    az ad sp show --id <appId> --query objectId --out tsv
     ```
 
 3. To assign permission for your new service principal to access secrets in your Key Vault, run the following Azure CLI command, replacing *&lt;keyVaultName&gt;* with the name of your Azure Key Vault resource and *&lt;objectId&gt;* with the value of your service principal's object ID.
