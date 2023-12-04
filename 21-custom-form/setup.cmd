@@ -5,14 +5,14 @@ rem Set variable values
 set subscription_id=YOUR_SUBSCRIPTION_ID
 set resource_group=YOUR_RESOURCE_GROUP
 set location=YOUR_LOCATION_NAME
-set expiry_date=2024-01-01T00:00:00Z
+set expiry_date=2025-01-01T00:00:00Z
 
 rem Get random numbers to create unique resource names
 set unique_id=!random!!random!
 
 rem Create a storage account in your Azure resource group 
 echo Creating storage...
-call az storage account create --name ai102form!unique_id! --subscription !subscription_id! --resource-group !resource_group! --location !location! --sku Standard_LRS --encryption-services blob --default-action Allow --output none
+call az storage account create --name ai102form!unique_id! --subscription !subscription_id! --resource-group !resource_group! --location !location! --sku Standard_LRS --encryption-services blob --default-action Allow --output none --allow-blob-public-access true
 
 echo Uploading files...
 rem Get storage key to create a container in the storage account 
@@ -24,7 +24,7 @@ set key_json=!key_json!%%a
 set key_string=!key_json:[ { "keyName": "key1", "permissions": "Full", "value": "=!
 set AZURE_STORAGE_KEY=!key_string:" } ]=!
 rem Create container 
-call az storage container create --account-name ai102form!unique_id! --name sampleforms --public-access blob --auth-mode key --account-key %AZURE_STORAGE_KEY% --output none
+call az storage container create --account-name ai102form!unique_id! --name sampleforms --auth-mode key --account-key %AZURE_STORAGE_KEY% --output none
 rem Upload files from your local sampleforms folder to a container called sampleforms in the storage account
 rem Each file is uploaded as a blob 
 call az storage blob upload-batch -d sampleforms -s ./sample-forms --account-name ai102form!unique_id! --auth-mode key --account-key %AZURE_STORAGE_KEY%  --output none

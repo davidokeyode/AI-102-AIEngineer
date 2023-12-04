@@ -1,12 +1,12 @@
 ---
 lab:
-    title: 'Create a Knowledge Store with Azure Cognitive Search'
+    title: 'Create a Knowledge Store with Azure AI Search'
     module: 'Module 12 - Creating a Knowledge Mining Solution'
 ---
 
-# Create a Knowledge Store with Azure Cognitive Search
+# Create a Knowledge Store with Azure AI Search
 
-Azure Cognitive Search uses an enrichment pipeline of cognitive skills to extract AI-generated fields from documents and include them in a search index. While the index might be considered the primary output from an indexing process, the enriched data it contains might also be useful in other ways. For example:
+Azure AI Search uses an enrichment pipeline of AI skills to extract AI-generated fields from documents and include them in a search index. While the index might be considered the primary output from an indexing process, the enriched data it contains might also be useful in other ways. For example:
 
 - Since the index is essentially a collection of JSON objects, each representing an indexed record, it might be useful to export the objects as JSON files for integration into a data orchestration process using tools such as Azure Data Factory.
 - You may want to normalize the index records into a relational schema of tables for analysis and reporting with tools such as Microsoft Power BI.
@@ -27,7 +27,7 @@ If you have already cloned **AI-102-AIEngineer** code repository to the environm
 
 ## Create Azure resources
 
-> **Note**: If you have previously completed the **[Create an Azure Cognitive Search solution](22-azure-search.md)** exercise, and still have these Azure resources in your subscription, you can skip this section and start at the **Create a search solution** section. Otherwise, follow the steps below to provision the required Azure resources.
+> **Note**: If you have previously completed the **[Create an Azure AI Search solution](22-azure-search.md)** exercise, and still have these Azure resources in your subscription, you can skip this section and start at the **Create a search solution** section. Otherwise, follow the steps below to provision the required Azure resources.
 
 1. In a web browser, open the Azure portal at `https://portal.azure.com`, and sign in using the Microsoft account associated with your Azure subscription.
 2. View the **Resource groups** in your subscription.
@@ -62,13 +62,13 @@ If you have already cloned **AI-102-AIEngineer** code repository to the environm
 13. When the script completes, review the output it displays and note the following information about your Azure resources (you will need these values later):
     - Storage account name
     - Storage connection string
-    - Cognitive Services account
-    - Cognitive Services key
+    - Azure AI Services account
+    - Azure AI Services key
     - Search service endpoint
     - Search service admin key
     - Search service query key
 
-14. In the Azure portal, refresh the resource group and verify that it contains the Azure Storage account, Azure Cognitive Services resource, and Azure Cognitive Search resource.
+14. In the Azure portal, refresh the resource group and verify that it contains the Azure Storage account, Azure AI Services resource, and Azure AI Search resource.
 
 ## Create a search solution
 
@@ -79,11 +79,11 @@ Now that you have the necessary Azure resources, you can create a search solutio
 - An **index** that defines a searchable set of document records.
 - An **indexer** that extracts the documents from the data source, applies the skillset, and populates the index. The process of indexing also persists the projections defined in the skillset in the knowledge store.
 
-In this exercise, you'll use the Azure Cognitive Search REST interface to create these components by submitting JSON requests.
+In this exercise, you'll use the Azure AI Search REST interface to create these components by submitting JSON requests.
 
 ### Prepare JSON for REST operations
 
-You'll use the REST interface to submit JSON definitions for your Azure Cognitive Search components.
+You'll use the REST interface to submit JSON definitions for your Azure AI Search components.
 
 1. In Visual Studio Code, in the **24-knowledge-store** folder, expand the **create-search** folder and select **data_source.json**. This file contains a JSON definition for a data source named **margies-knowledge-data**.
 2. Replace the **YOUR_CONNECTION_STRING** placeholder with the connection string for your Azure storage account, which should resemble the following:
@@ -96,9 +96,9 @@ You'll use the REST interface to submit JSON definitions for your Azure Cognitiv
 
 3. Save and close the updated JSON file.
 4. In the **create-search** folder, open **skillset.json**. This file contains a JSON definition for a skillset named **margies-knowledge-skillset**.
-5. At the top of the skillset definition, in the **cognitiveServices** element, replace the **YOUR_COGNITIVE_SERVICES_KEY** placeholder with either of the keys for your cognitive services resources.
+5. At the top of the skillset definition, in the **cognitiveServices** element, replace the **YOUR_COGNITIVE_SERVICES_KEY** placeholder with either of the keys for your Azure AI Services resources.
 
-    *You can find the keys on the **Keys and Endpoint** page for your cognitive services resource in the Azure portal.*
+    *You can find the keys on the **Keys and Endpoint** page for your Azure AI Services resource in the Azure portal.*
 
 6. At the end of the collection of skills in your skillset, find the **Microsoft.Skills.Util.ShaperSkill** skill named **define-projection**. This skill defines a JSON structure for the enriched data that will be used for the projections that the pipeline will persist on the knowledge store for each document processed by the indexer.
 7. At the bottom of the skillset file, observe that the skillset also includes a **knowledgeStore** definition, which includes a connection string for the Azure Storage account where the knowledge store is to be created, and a collection of **projections**. This skillset includes three *projection groups*:
@@ -120,10 +120,10 @@ You'll use the REST interface to submit JSON definitions for your Azure Cognitiv
 
 Now that you've prepared the JSON objects that define your search solution components, you can submit the JSON documents to the REST interface to create them.
 
-1. In the **create-search** folder, open **create-search.cmd**. This batch script uses the cURL utility to submit the JSON definitions to the REST interface for your Azure Cognitive Search resource.
-2. Replace the **YOUR_SEARCH_URL** and **YOUR_ADMIN_KEY** variable placeholders with the **Url** and one of the **admin keys** for your Azure Cognitive Search resource.
+1. In the **create-search** folder, open **create-search.cmd**. This batch script uses the cURL utility to submit the JSON definitions to the REST interface for your Azure AI Search resource.
+2. Replace the **YOUR_SEARCH_URL** and **YOUR_ADMIN_KEY** variable placeholders with the **Url** and one of the **admin keys** for your Azure AI Search resource.
 
-    *You can find these values on the **Overview** and **Keys** pages for your Azure Cognitive Search resource in the Azure portal.*
+    *You can find these values on the **Overview** and **Keys** pages for your Azure AI Search resource in the Azure portal.*
 
 3. Save the updated batch file.
 4. Right-click the the **create-search** folder and select **Open in Integrated Terminal**.
@@ -133,7 +133,7 @@ Now that you've prepared the JSON objects that define your search solution compo
     create-search
     ```
 
-6. When the script completes, in the Azure portal, on the page for your Azure Cognitive Search resource, select the **Indexers** page and wait for the indexing process to complete.
+6. When the script completes, in the Azure portal, on the page for your Azure AI Search resource, select the **Indexers** page and wait for the indexing process to complete.
 
     *You can select **Refresh** to track the progress of the indexing operation. It may take a minute or so to complete.*
 
@@ -216,4 +216,4 @@ The ability to create *table* projections enables you to build analytical and re
 
 ## More information
 
-To learn more about creating knowledge stores with Azure Cognitive Search, see the [Azure Cognitive Search documentation](https://docs.microsoft.com/azure/search/knowledge-store-concept-intro).
+To learn more about creating knowledge stores with Azure AI Search, see the [Azure AI Search documentation](https://docs.microsoft.com/azure/search/knowledge-store-concept-intro).

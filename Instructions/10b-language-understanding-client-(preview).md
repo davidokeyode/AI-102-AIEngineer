@@ -6,7 +6,7 @@ lab:
 
 # Create a Language Service Client Application
 
-The Conversational Language Understanding feature of the Azure Cognitive Service for Language enables you to define a conversational language model that client apps can use to interpret natural language input from users, predict the users *intent* (what they want to achieve), and identify any *entities* to which the intent should be applied. You can create client applications that consume conversational language understanding models directly through REST interfaces, or by using language-specific software development kits (SDKs).
+The Conversational Language Understanding feature of the Azure AI Service for Language enables you to define a conversational language model that client apps can use to interpret natural language input from users, predict the users *intent* (what they want to achieve), and identify any *entities* to which the intent should be applied. You can create client applications that consume conversational language understanding models directly through REST interfaces, or by using language-specific software development kits (SDKs).
 
 ## Clone the repository for this course
 
@@ -37,7 +37,6 @@ If you already have a Language service resource in your Azure subscription, you 
     - **Region**: *westus2*
     - **Name**: *Enter a unique name*
     - **Pricing tier**: *S*
-    - **Legal terms**: *select check box to confirm*
     - **Responsible AI Notice**: *select check box to confirm*
 
 3. Wait for the resources to be created. You can view your resource by navigating to the resource group where you created it.
@@ -56,7 +55,7 @@ If you already have a **Clock** project from a previous lab or exercise, you can
 
 5. If a panel with tips for creating an effective Language service app is displayed, close it.
 
-6. At the left of the Language Studio portal, select **Training jobs** to train the app. Click **Start a training job**, name the model **Clock** and keep default training mode (Standar) and data splitting. Select **Train**. Training may take several minutes to complete.
+6. At the left of the Language Studio portal, select **Training jobs** to train the app. Click **Start a training job**, name the model **Clock** and keep default training mode (Standard) and data splitting. Select **Train**. Training may take several minutes to complete.
 
     > **Note**: Because the model name **Clock** is hard-coded in the clock-client code (used later in the lab), capitalize and spell the name exactly as described. 
 
@@ -64,7 +63,7 @@ If you already have a **Clock** project from a previous lab or exercise, you can
 
     > **Note**: Because the deployment name **production** is hard-coded in the clock-client code (used later in the lab), capitalize and spell the name exactly as described. 
 
-8. The client applications needs the **Endpoint URL** and **Primary key** to use your deployed model. After the deployment is complete, to get those parameters, open the Azure portal at [https://portal.azure.com](https://portal.azure.com/?azure-portal=true), and sign in using the Microsoft account associated with your Azure subscription. On the Search bar, search for **Language** and select it to choose the *Cognitive Services|Language service*.
+8. The client applications needs the **Endpoint URL** and **Primary key** to use your deployed model. After the deployment is complete, to get those parameters, open the Azure portal at [https://portal.azure.com](https://portal.azure.com/?azure-portal=true), and sign in using the Microsoft account associated with your Azure subscription. On the Search bar, search for **Language** and select it to choose the *Azure AI Services|Language service*.
 
 9. Your Language service resource should be listed, select that resource.
 
@@ -87,7 +86,8 @@ In this exercise, you'll complete a partially implemented client application tha
     **C#**
 
     ```
-    dotnet add package Azure.AI.Language.Conversations --version 1.0.0-beta.2
+    dotnet add package Azure.AI.Language.Conversations --version 1.0.0
+    dotnet add package Azure.Core
     ```
 
     **Python**
@@ -141,10 +141,10 @@ Now you're ready to implement code that uses the SDK to get a prediction from yo
 
     ```C#
     // Create a client for the Language service model
-    Uri lsEndpoint = new Uri(predictionEndpoint);
-    AzureKeyCredential lsCredential = new AzureKeyCredential(predictionKey);
+    Uri endpoint = new Uri(predictionEndpoint);
+    AzureKeyCredential credential = new AzureKeyCredential(predictionKey);
 
-    ConversationAnalysisClient lsClient = new ConversationAnalysisClient(lsEndpoint, lsCredential);
+    ConversationAnalysisClient client = new ConversationAnalysisClient(endpoint, credential);
     ```
 
     **Python**
@@ -161,24 +161,41 @@ Now you're ready to implement code that uses the SDK to get a prediction from yo
 
     ```C#
     // Call the Language service model to get intent and entities
-    var lsProject = "Clock";
-    var lsSlot = "production";
-
-    ConversationsProject conversationsProject = new ConversationsProject(lsProject, lsSlot);
-    Response<AnalyzeConversationResult> response = await lsClient.AnalyzeConversationAsync(userText, conversationsProject);
-
-    ConversationPrediction conversationPrediction = response.Value.Prediction as ConversationPrediction;
-
-    Console.WriteLine(JsonConvert.SerializeObject(conversationPrediction, Formatting.Indented));
+    var projectName = "Clock";
+    var deploymentName = "production";
+    var data = new
+    {
+        analysisInput = new
+        {
+            conversationItem = new
+            {
+                text = userText,
+                id = "1",
+                participantId = "1",
+            }
+        },
+        parameters = new
+        {
+            projectName,
+            deploymentName,
+            // Use Utf16CodeUnit for strings in .NET.
+            stringIndexType = "Utf16CodeUnit",
+        },
+        kind = "Conversation",
+    };
+    // Send request
+    Response response = await client.AnalyzeConversationAsync(RequestContent.Create(data));
+    dynamic conversationalTaskResult = response.Content.ToDynamicFromJson(JsonPropertyNames.CamelCase);
+    dynamic conversationPrediction = conversationalTaskResult.Result.Prediction;   
+    var options = new JsonSerializerOptions { WriteIndented = true };
+    Console.WriteLine(JsonSerializer.Serialize(conversationalTaskResult, options));
     Console.WriteLine("--------------------\n");
     Console.WriteLine(userText);
     var topIntent = "";
-    if (conversationPrediction.Intents[0].Confidence > 0.5)
+    if (conversationPrediction.Intents[0].ConfidenceScore > 0.5)
     {
         topIntent = conversationPrediction.TopIntent;
     }
-
-    var entities = conversationPrediction.Entities;
     ```
 
     **Python**
@@ -239,72 +256,51 @@ Now you're ready to implement code that uses the SDK to get a prediction from yo
     switch (topIntent)
     {
         case "GetTime":
-            var location = "local";
-            // Check for entities
-            if (entities.Count > 0)
+            var location = "local";           
+            // Check for a location entity
+            foreach (dynamic entity in conversationPrediction.Entities)
             {
-                // Check for a location entity
-                foreach (ConversationEntity entity in conversationPrediction.Entities)
+                if (entity.Category == "Location")
                 {
-                    if (entity.Category == "Location")
-                    {
-                        //Console.WriteLine($"Location Confidence: {entity.Confidence}");
-                        location = entity.Text;
-                    }
-                    
+                    //Console.WriteLine($"Location Confidence: {entity.ConfidenceScore}");
+                    location = entity.Text;
                 }
-
             }
-
             // Get the time for the specified location
-            var getTimeTask = Task.Run(() => GetTime(location));
-            string timeResponse = await getTimeTask;
+            string timeResponse = GetTime(location);
             Console.WriteLine(timeResponse);
             break;
-
         case "GetDay":
-            var date = DateTime.Today.ToShortDateString();
-            // Check for entities
-            if (entities.Count > 0)
+            var date = DateTime.Today.ToShortDateString();            
+            // Check for a Date entity
+            foreach (dynamic entity in conversationPrediction.Entities)
             {
-                // Check for a Date entity
-                foreach (ConversationEntity entity in conversationPrediction.Entities)
+                if (entity.Category == "Date")
                 {
-                    if (entity.Category == "Date")
-                    {
-                        //Console.WriteLine($"Location Confidence: {entity.Confidence}");
-                        date = entity.Text;
-                    }
+                    //Console.WriteLine($"Location Confidence: {entity.ConfidenceScore}");
+                    date = entity.Text;
                 }
-            }
+            }            
             // Get the day for the specified date
-            var getDayTask = Task.Run(() => GetDay(date));
-            string dayResponse = await getDayTask;
+            string dayResponse = GetDay(date);
             Console.WriteLine(dayResponse);
             break;
-
         case "GetDate":
             var day = DateTime.Today.DayOfWeek.ToString();
-            // Check for entities
-            if (entities.Count > 0)
+            // Check for entities            
+            // Check for a Weekday entity
+            foreach (dynamic entity in conversationPrediction.Entities)
             {
-                // Check for a Weekday entity
-                foreach (ConversationEntity entity in conversationPrediction.Entities)
+                if (entity.Category == "Weekday")
                 {
-                    if (entity.Category == "Weekday")
-                    {
-                        //Console.WriteLine($"Location Confidence: {entity.Confidence}");
-                        day = entity.Text;
-                    }
+                    //Console.WriteLine($"Location Confidence: {entity.ConfidenceScore}");
+                    day = entity.Text;
                 }
-                
-            }
+            }          
             // Get the date for the specified day
-            var getDateTask = Task.Run(() => GetDate(day));
-            string dateResponse = await getDateTask;
+            string dateResponse = GetDate(day);
             Console.WriteLine(dateResponse);
             break;
-
         default:
             // Some other intent (for example, "None") was predicted
             Console.WriteLine("Try asking me for the time, the day, or the date.");
